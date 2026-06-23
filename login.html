@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <title>Login | LUNA ARENA</title>
+</head>
+<body>
+    <header>
+        <div class="logo">LUNA<span>ARENA</span></div>
+                <nav>
+            <a href="index.html">Home</a>
+            <a href="player.html">Legends</a>
+            <a href="tournaments.html">Tournaments</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="contact.html">Join</a>
+            <a href="signup.html">Sign Up</a>
+            <a href="login.html">Login</a>
+            <a href="profile.html">Profile</a>
+            <button class="theme-toggle" id="themeToggle" onclick="ThemeManager.toggle()" title="Toggle Dark/Light Mode">☀️</button>
+        </nav>
+    </header>
+
+    <section id="contact" style="display: flex; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 450px; padding: 40px; border-radius: 16px;">
+            <h2 style="font-family: 'Orbitron'; color: var(--neon-purple); margin-bottom: 8px;">SYSTEM LOGIN</h2>
+            <p style="color: var(--text-dim); font-size: 12px; letter-spacing: 2px; margin-bottom: 28px;">ACCESS YOUR OPERATIVE PROFILE</p>
+
+            <form id="loginForm" novalidate>
+                <div style="margin-bottom: 20px; text-align: left;">
+                    <input type="email" id="loginEmail" placeholder="EMAIL ADDRESS" style="width: 100%;">
+                    <div id="loginEmailErr" class="error-msg"></div>
+                </div>
+
+                <div style="margin-bottom: 20px; text-align: left;">
+                    <div class="pass-wrapper">
+                        <input type="password" id="loginPass" placeholder="PASSWORD" style="width: 100%;">
+                        <span id="togglePass" class="toggle-btn">🙈</span>
+                    </div>
+                    <div id="loginPassErr" class="error-msg"></div>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%;">AUTHENTICATE</button>
+
+                <p style="text-align:center; margin-top:20px; color:var(--text-dim); font-size:13px;">
+                    New operative? <a href="signup.html" style="color:var(--neon-blue); text-decoration:none;">Create Account →</a>
+                </p>
+            </form>
+        </div>
+    </section>
+
+    <!-- CLAUDE-POWERED CHATBOT -->
+    <div id="luna-bot-widget">
+        <button class="bot-toggle" onclick="LunaBot.toggle()" title="Open LUNA_ASSIST">🤖</button>
+        <div class="bot-window" id="botWin">
+            <div class="bot-header">
+                <span>LUNA_ASSIST v2.0</span>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="bot-status"><div class="bot-status-dot"></div><span>ONLINE</span></div>
+                    <button onclick="LunaBot.toggle()" style="background:none; border:none; color:white; cursor:pointer; font-size:14px; opacity:0.7;">✖</button>
+                </div>
+            </div>
+            <div class="bot-messages" id="botMsgs">
+                <div class="msg bot">Need help logging in? I can also tell you about Luna Arena — just ask. 🔐</div>
+            </div>
+            <div class="bot-input">
+                <input type="text" id="botInp" placeholder="Ask anything..." onkeypress="if(event.key==='Enter') LunaBot.send()">
+                <button onclick="LunaBot.send()">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="luna-core.js"></script>
+    <script>
+        const toggleBtn = document.getElementById('togglePass');
+        const passInput = document.getElementById('loginPass');
+
+        toggleBtn.addEventListener('click', () => {
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                toggleBtn.innerText = '👁️';
+            } else {
+                passInput.type = 'password';
+                toggleBtn.innerText = '🙈';
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            const emailErr = document.getElementById('loginEmailErr');
+            const passErr = document.getElementById('loginPassErr');
+            emailErr.innerText = ''; passErr.innerText = '';
+
+            if (!email) { emailErr.innerText = 'Email is required'; return; }
+            if (!pass)  { passErr.innerText = 'Password is required'; return; }
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST', credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password: pass })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    window.location.href = data.role === 'admin' ? 'admin.html' : 'profile.html';
+                } else {
+                    passErr.innerText = data.error || 'Login failed';
+                }
+            } catch {
+                passErr.innerText = 'Server error. Make sure app.py is running.';
+            }
+        });
+    </script>
+</body>
+</html>

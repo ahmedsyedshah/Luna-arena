@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <title>Contact | LUNA ARENA</title>
+</head>
+<body>
+    <header>
+        <div class="logo">LUNA<span>ARENA</span></div>
+                <nav>
+            <a href="index.html">Home</a>
+            <a href="player.html">Legends</a>
+            <a href="tournaments.html">Tournaments</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="contact.html">Join</a>
+            <a href="signup.html">Sign Up</a>
+            <a href="login.html">Login</a>
+            <a href="profile.html">Profile</a>
+            <button class="theme-toggle" id="themeToggle" onclick="ThemeManager.toggle()" title="Toggle Dark/Light Mode">☀️</button>
+        </nav>
+    </header>
+
+    <section id="contact">
+        <div style="text-align: center; margin-bottom: 50px;">
+            <h2 style="font-family: 'Orbitron'; font-size: 3.5rem; color: var(--neon-blue);">RECRUITMENT</h2>
+            <p style="color: var(--text-dim); letter-spacing: 2px;">JOIN THE ELITE FORCE OR INQUIRE ABOUT SPONSORSHIP</p>
+        </div>
+
+        <form class="contact-form" id="contactForm">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <input type="text" id="gamerTag" placeholder="GAMER TAG / NAME" required>
+                <input type="email" id="contactEmail" placeholder="EMAIL ADDRESS" required>
+            </div>
+
+            <select id="inquiryType">
+                <option value="player">Player Registration</option>
+                <option value="sponsor">Sponsorship Inquiry</option>
+                <option value="press">Press/Media</option>
+            </select>
+
+            <textarea id="contactMsg" rows="6" placeholder="YOUR MESSAGE TO THE COUNCIL..." required></textarea>
+
+            <button type="submit" class="btn">INITIALIZE TRANSMISSION</button>
+            <div id="contactSuccess" style="text-align:center; display:none; color:var(--soft-mint); font-family:'Orbitron'; letter-spacing:2px; font-size:14px;">
+                ✅ TRANSMISSION RECEIVED. WE'LL BE IN TOUCH.
+            </div>
+        </form>
+
+        <div style="margin-top: 60px; text-align: center; border-top: 1px solid var(--border-glass); padding-top: 30px;">
+            <p style="color: var(--text-dim);">&copy; 2026 LUNA ARENA PROTOCOL. ALL RIGHTS RESERVED.</p>
+        </div>
+    </section>
+
+    <!-- CLAUDE-POWERED CHATBOT -->
+    <div id="luna-bot-widget">
+        <button class="bot-toggle" onclick="LunaBot.toggle()" title="Open LUNA_ASSIST">🤖</button>
+        <div class="bot-window" id="botWin">
+            <div class="bot-header">
+                <span>LUNA_ASSIST v2.0</span>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="bot-status"><div class="bot-status-dot"></div><span>ONLINE</span></div>
+                    <button onclick="LunaBot.toggle()" style="background:none; border:none; color:white; cursor:pointer; font-size:14px; opacity:0.7;">✖</button>
+                </div>
+            </div>
+            <div class="bot-messages" id="botMsgs">
+                <div class="msg bot">Ready to join? I can help you with registration, sponsorship questions, or anything about Luna Arena. 🎮</div>
+            </div>
+            <div class="bot-input">
+                <input type="text" id="botInp" placeholder="How do I join?" onkeypress="if(event.key==='Enter') LunaBot.send()">
+                <button onclick="LunaBot.send()">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="luna-core.js"></script>
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            btn.textContent = 'SENDING...';
+            try {
+                const res = await fetch('/api/contact', {
+                    method: 'POST', credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        gamerTag:    document.getElementById('gamerTag').value,
+                        email:       document.getElementById('contactEmail').value,
+                        inquiryType: document.getElementById('inquiryType').value,
+                        message:     document.getElementById('contactMsg').value,
+                    })
+                });
+                if (res.ok) {
+                    document.getElementById('contactSuccess').style.display = 'block';
+                    this.reset();
+                    setTimeout(() => document.getElementById('contactSuccess').style.display = 'none', 4000);
+                }
+            } catch { alert('Server error. Make sure app.py is running.'); }
+            btn.textContent = 'INITIALIZE TRANSMISSION';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <title>Schedule | LUNA ARENA</title>
+</head>
+<body>
+    <header>
+        <div class="logo">LUNA<span>ARENA</span></div>
+                <nav>
+            <a href="index.html">Home</a>
+            <a href="player.html">Legends</a>
+            <a href="tournaments.html">Tournaments</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="contact.html">Join</a>
+            <a href="signup.html">Sign Up</a>
+            <a href="login.html">Login</a>
+            <a href="profile.html">Profile</a>
+            <button class="theme-toggle" id="themeToggle" onclick="ThemeManager.toggle()" title="Toggle Dark/Light Mode">☀️</button>
+        </nav>
+    </header>
+
+    <section id="schedule">
+        <div style="text-align: center; margin-bottom: 60px;">
+            <h2 style="font-family: 'Syncopate'; font-size: 3rem; color: var(--text-body);">BATTLE <span style="color: var(--soft-mint);">TIMELINE</span></h2>
+            <p style="color: var(--cyber-pink); letter-spacing: 3px;">SEASON 2026 // PHASE ONE</p>
+        </div>
+
+        <div class="schedule-container" style="max-width: 900px; margin: auto;">
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-radius: 20px; padding: 30px;">
+                <div style="font-weight: 700; color: var(--soft-mint);">20 FEB</div>
+                <div style="font-size: 1.4rem; letter-spacing: 2px; color: var(--text-body);">VALKYRIE SQUAD <span style="color: var(--cyber-pink);">vs</span> STARGAZERS</div>
+                <div style="color: var(--text-dim);">19:00 PM</div>
+            </div>
+
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-radius: 20px; padding: 30px;">
+                <div style="font-weight: 700; color: var(--soft-mint);">21 FEB</div>
+                <div style="font-size: 1.4rem; letter-spacing: 2px; color: var(--text-body);">NOVA ELITE <span style="color: var(--cyber-pink);">vs</span> MYSTIC G2</div>
+                <div style="color: var(--text-dim);">21:00 PM</div>
+            </div>
+
+            <div class="card final-match" style="display: flex; justify-content: space-between; align-items: center; margin-top: 40px; border-radius: 25px; padding: 40px;">
+                <div style="background: var(--cyber-pink); padding: 5px 15px; border-radius: 10px; font-size: 0.8rem; color: white; font-weight: 900; letter-spacing: 1px;">CHAMPIONSHIP</div>
+                <div style="font-size: 1.8rem; font-family: 'Syncopate'; color: var(--text-body);">GRAND FINALS</div>
+                <div style="font-weight: 900; color: var(--soft-mint);">22:00 PM</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CLAUDE-POWERED CHATBOT -->
+    <div id="luna-bot-widget">
+        <button class="bot-toggle" onclick="LunaBot.toggle()" title="Open LUNA_ASSIST">🤖</button>
+        <div class="bot-window" id="botWin">
+            <div class="bot-header">
+                <span>LUNA_ASSIST v2.0</span>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="bot-status"><div class="bot-status-dot"></div><span>ONLINE</span></div>
+                    <button onclick="LunaBot.toggle()" style="background:none; border:none; color:white; cursor:pointer; font-size:14px; opacity:0.7;">✖</button>
+                </div>
+            </div>
+            <div class="bot-messages" id="botMsgs">
+                <div class="msg bot">You're viewing the Season 2026 brackets. Ask me about match dates, teams, or the Grand Finals! 🏆</div>
+            </div>
+            <div class="bot-input">
+                <input type="text" id="botInp" placeholder="Ask about the schedule..." onkeypress="if(event.key==='Enter') LunaBot.send()">
+                <button onclick="LunaBot.send()">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="luna-core.js"></script>
+</body>
+</html>

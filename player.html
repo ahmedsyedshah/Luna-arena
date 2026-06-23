@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legends | LUNA ARENA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">LUNA<span>ARENA</span></div>
+                <nav>
+            <a href="index.html">Home</a>
+            <a href="player.html">Legends</a>
+            <a href="tournaments.html">Tournaments</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="contact.html">Join</a>
+            <a href="signup.html">Sign Up</a>
+            <a href="login.html">Login</a>
+            <a href="profile.html">Profile</a>
+            <button class="theme-toggle" id="themeToggle" onclick="ThemeManager.toggle()" title="Toggle Dark/Light Mode">☀️</button>
+        </nav>
+    </header>
+
+    <section id="players">
+        <div class="players-heading">
+            <h2>THE GODDESSES</h2>
+            <p>Luna Arena's elite operatives · Season 2026</p>
+        </div>
+
+        <div class="controls-bar">
+            <div class="search-wrap">
+                <span class="s-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search by name or role..." autocomplete="off">
+            </div>
+            <div class="filter-group">
+                <label>Game</label>
+                <button class="pill active" data-filter="game" data-value="all">All</button>
+                <button class="pill" data-filter="game" data-value="Valorant">Valorant</button>
+                <button class="pill" data-filter="game" data-value="Apex">Apex</button>
+                <button class="pill" data-filter="game" data-value="CS2">CS2</button>
+                <button class="pill" data-filter="game" data-value="Fortnite">Fortnite</button>
+            </div>
+            <div class="filter-group">
+                <label>Rank</label>
+                <button class="pill active" data-filter="rank" data-value="all">All</button>
+                <button class="pill" data-filter="rank" data-value="Top">👑 Top</button>
+                <button class="pill" data-filter="rank" data-value="Mid">⚡ Mid</button>
+                <button class="pill" data-filter="rank" data-value="Low">🛡 Low</button>
+            </div>
+        </div>
+
+        <div class="results-meta" id="resultsCount"></div>
+
+        <div class="grid" id="playersGrid">
+            <div class="shimmer-card"></div>
+            <div class="shimmer-card"></div>
+            <div class="shimmer-card"></div>
+            <div class="shimmer-card"></div>
+            <div class="shimmer-card"></div>
+            <div class="shimmer-card"></div>
+        </div>
+
+        <div id="no-results">
+            <span class="no-res-icon">⚡</span>
+            <div class="no-res-title">NO OPERATIVES FOUND</div>
+            <div class="no-res-sub">Try adjusting your filters, commander.</div>
+        </div>
+    </section>
+
+    <!-- CLAUDE-POWERED CHATBOT -->
+    <div id="luna-bot-widget">
+        <button class="bot-toggle" onclick="LunaBot.toggle()" title="Open LUNA_ASSIST">🤖</button>
+        <div class="bot-window" id="botWin">
+            <div class="bot-header">
+                <span>LUNA_ASSIST v2.0</span>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="bot-status"><div class="bot-status-dot"></div><span>ONLINE</span></div>
+                    <button onclick="LunaBot.toggle()" style="background:none; border:none; color:white; cursor:pointer; font-size:14px; opacity:0.7;">✖</button>
+                </div>
+            </div>
+            <div class="bot-messages" id="botMsgs">
+                <div class="msg bot">You're on the Legends page. Ask me about any player's stats, rank, or game. ⚡</div>
+            </div>
+            <div class="bot-input">
+                <input type="text" id="botInp" placeholder="Ask about a player..." onkeypress="if(event.key==='Enter') LunaBot.send()">
+                <button onclick="LunaBot.send()">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="luna-core.js"></script>
+    <script src="players.js"></script>
+</body>
+</html>

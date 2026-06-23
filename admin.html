@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <title>Admin Panel | LUNA ARENA</title>
+    <style>
+        .admin-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:30px; }
+        .tab-btn { padding:10px 22px; border-radius:20px; border:1px solid var(--border-glass); background:transparent; color:var(--text-dim); cursor:pointer; font-family:'Rajdhani'; font-weight:700; letter-spacing:1px; transition:all 0.2s; }
+        .tab-btn.active { background:var(--neon-blue); border-color:var(--neon-blue); color:#000; }
+        .admin-table { width:100%; border-collapse:collapse; }
+        .admin-table th { padding:12px 16px; text-align:left; color:var(--neon-blue); font-size:11px; letter-spacing:2px; border-bottom:1px solid var(--border-glass); }
+        .admin-table td { padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-family:'Rajdhani'; font-size:14px; }
+        .admin-table tr:hover td { background:rgba(255,255,255,0.03); }
+        .action-btn { padding:5px 12px; border-radius:8px; border:none; cursor:pointer; font-size:12px; font-weight:700; margin-right:6px; }
+        .btn-edit { background:rgba(0,242,255,0.15); color:var(--neon-blue); border:1px solid var(--neon-blue); }
+        .btn-delete { background:rgba(255,77,77,0.15); color:#ff4d4d; border:1px solid #ff4d4d; }
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:1000; align-items:center; justify-content:center; }
+        .modal-overlay.open { display:flex; }
+        .modal-box { background:var(--card-bg); border:1px solid var(--border-glass); border-radius:16px; padding:32px; width:90%; max-width:480px; }
+        .modal-box h3 { font-family:'Orbitron'; color:var(--neon-blue); margin-bottom:20px; }
+        .modal-box input, .modal-box select { width:100%; margin-bottom:14px; }
+        .stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; margin-bottom:30px; }
+        .stat-box { background:var(--card-bg); border:1px solid var(--border-glass); border-radius:12px; padding:20px; text-align:center; }
+        .stat-box .num { font-family:'Orbitron'; font-size:2rem; color:var(--neon-blue); }
+        .stat-box .lbl { color:var(--text-dim); font-size:11px; letter-spacing:2px; margin-top:4px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">LUNA<span>ARENA</span></div>
+                <nav>
+            <a href="index.html">Home</a>
+            <a href="player.html">Legends</a>
+            <a href="tournaments.html">Tournaments</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="contact.html">Join</a>
+            <a href="signup.html">Sign Up</a>
+            <a href="login.html">Login</a>
+            <a href="profile.html">Profile</a>
+            <button class="theme-toggle" id="themeToggle" onclick="ThemeManager.toggle()" title="Toggle Dark/Light Mode">☀️</button>
+        </nav>
+    </header>
+
+    <section style="padding:120px 8% 60px;">
+        <div id="accessDenied" style="display:none; text-align:center;">
+            <h2 style="font-family:'Orbitron'; color:#ff4d4d;">ACCESS DENIED</h2>
+            <p style="color:var(--text-dim); margin:16px 0;">Admin credentials required.</p>
+            <a href="login.html" class="btn" style="text-decoration:none;">LOGIN AS ADMIN</a>
+        </div>
+
+        <div id="adminContent" style="display:none;">
+            <h2 style="font-family:'Orbitron'; color:var(--cyber-pink); margin-bottom:8px;">ADMIN PANEL</h2>
+            <p style="color:var(--text-dim); letter-spacing:2px; font-size:12px; margin-bottom:30px;">FULL DATABASE CONTROL</p>
+
+            <div class="stat-grid">
+                <div class="stat-box"><div class="num" id="statUsers">—</div><div class="lbl">USERS</div></div>
+                <div class="stat-box"><div class="num" id="statRegs">—</div><div class="lbl">REGISTRATIONS</div></div>
+                <div class="stat-box"><div class="num" id="statMsgs">—</div><div class="lbl">MESSAGES</div></div>
+                <div class="stat-box"><div class="num" id="statPlayers">—</div><div class="lbl">PLAYERS</div></div>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="showTab('users')">👥 USERS</button>
+                <button class="tab-btn" onclick="showTab('players')">🎮 PLAYERS</button>
+                <button class="tab-btn" onclick="showTab('registrations')">🏆 REGISTRATIONS</button>
+                <button class="tab-btn" onclick="showTab('messages')">📨 MESSAGES</button>
+            </div>
+
+            <!-- USERS TAB -->
+            <div id="tab-users">
+                <table class="admin-table">
+                    <thead><tr><th>ID</th><th>NAME</th><th>EMAIL</th><th>ROLE</th><th>JOINED</th><th>ACTIONS</th></tr></thead>
+                    <tbody id="usersBody"></tbody>
+                </table>
+            </div>
+
+            <!-- PLAYERS TAB -->
+            <div id="tab-players" style="display:none;">
+                <div style="margin-bottom:16px;">
+                    <button class="btn" onclick="openAddPlayer()" style="padding:10px 24px; font-size:13px;">+ ADD PLAYER</button>
+                </div>
+                <table class="admin-table">
+                    <thead><tr><th>NAME</th><th>GAME</th><th>RANK</th><th>WINS</th><th>SCORE</th><th>ACTIONS</th></tr></thead>
+                    <tbody id="playersBody"></tbody>
+                </table>
+            </div>
+
+            <!-- REGISTRATIONS TAB -->
+            <div id="tab-registrations" style="display:none;">
+                <table class="admin-table">
+                    <thead><tr><th>GAMER TAG</th><th>EMAIL</th><th>TOURNAMENT</th><th>PAYMENT REF</th><th>STATUS</th><th>DATE</th></tr></thead>
+                    <tbody id="regsBody"></tbody>
+                </table>
+            </div>
+
+            <!-- MESSAGES TAB -->
+            <div id="tab-messages" style="display:none;">
+                <table class="admin-table">
+                    <thead><tr><th>GAMER TAG</th><th>EMAIL</th><th>TYPE</th><th>MESSAGE</th><th>DATE</th></tr></thead>
+                    <tbody id="msgsBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- EDIT USER MODAL -->
+    <div class="modal-overlay" id="editUserModal">
+        <div class="modal-box">
+            <h3>EDIT USER</h3>
+            <input type="hidden" id="editUserId">
+            <input type="text" id="editFirstName" placeholder="First Name">
+            <input type="text" id="editLastName" placeholder="Last Name">
+            <input type="email" id="editEmail" placeholder="Email">
+            <select id="editRole">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn" onclick="saveUser()" style="flex:1;">SAVE</button>
+                <button class="btn" onclick="closeModal('editUserModal')" style="flex:1; background:transparent; border:1px solid var(--border-glass); color:var(--text-dim);">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD/EDIT PLAYER MODAL -->
+    <div class="modal-overlay" id="playerModal">
+        <div class="modal-box">
+            <h3 id="playerModalTitle">ADD PLAYER</h3>
+            <input type="hidden" id="editPlayerId">
+            <input type="text" id="pName" placeholder="Operative Name">
+            <select id="pGame">
+                <option>Valorant</option><option>Apex</option><option>CS2</option><option>Fortnite</option>
+            </select>
+            <input type="text" id="pRole" placeholder="Role (e.g. Sniper)">
+            <select id="pRank">
+                <option>Top</option><option>Mid</option><option>Low</option>
+            </select>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <input type="number" id="pWins" placeholder="Wins">
+                <input type="number" id="pKd" step="0.1" placeholder="K/D">
+                <input type="number" id="pHours" placeholder="Hours">
+                <input type="number" id="pScore" placeholder="Score">
+            </div>
+            <input type="text" id="pBio" placeholder="Bio" style="margin-top:10px;">
+            <input type="text" id="pAchievements" placeholder="Achievements (comma-separated)">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn" onclick="savePlayer()" style="flex:1;">SAVE</button>
+                <button class="btn" onclick="closeModal('playerModal')" style="flex:1; background:transparent; border:1px solid var(--border-glass); color:var(--text-dim);">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="luna-core.js"></script>
+    <script>
+        let allPlayers = [];
+
+        async function checkAdmin() {
+            try {
+                const res = await fetch('/api/me', { credentials:'include' });
+                if (!res.ok) throw new Error();
+                const u = await res.json();
+                if (u.role !== 'admin') throw new Error();
+                document.getElementById('adminContent').style.display = 'block';
+                loadAll();
+            } catch {
+                document.getElementById('accessDenied').style.display = 'block';
+            }
+        }
+
+        async function loadAll() {
+            const [users, players, regs, msgs] = await Promise.all([
+                fetch('/api/admin/users', {credentials:'include'}).then(r=>r.json()),
+                fetch('/api/players', {credentials:'include'}).then(r=>r.json()),
+                fetch('/api/admin/registrations', {credentials:'include'}).then(r=>r.json()),
+                fetch('/api/admin/messages', {credentials:'include'}).then(r=>r.json()),
+            ]);
+            allPlayers = players;
+            document.getElementById('statUsers').textContent = users.length;
+            document.getElementById('statRegs').textContent = regs.length;
+            document.getElementById('statMsgs').textContent = msgs.length;
+            document.getElementById('statPlayers').textContent = players.length;
+            renderUsers(users);
+            renderPlayers(players);
+            renderRegs(regs);
+            renderMsgs(msgs);
+        }
+
+        function renderUsers(users) {
+            document.getElementById('usersBody').innerHTML = users.map(u => `
+                <tr>
+                    <td>${u.id}</td>
+                    <td>${u.first_name} ${u.last_name}</td>
+                    <td>${u.email}</td>
+                    <td><span style="color:${u.role==='admin'?'var(--cyber-pink)':'var(--neon-blue)'}">${u.role.toUpperCase()}</span></td>
+                    <td>${new Date(u.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="action-btn btn-edit" onclick="openEditUser(${u.id},'${u.first_name}','${u.last_name}','${u.email}','${u.role}')">EDIT</button>
+                        <button class="action-btn btn-delete" onclick="deleteUser(${u.id})">DELETE</button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        function renderPlayers(players) {
+            document.getElementById('playersBody').innerHTML = players.map(p => `
+                <tr>
+                    <td style="font-weight:700;">${p.name}</td>
+                    <td>${p.game}</td>
+                    <td>${p.rank}</td>
+                    <td>${p.wins}</td>
+                    <td style="font-family:'Orbitron'; color:var(--neon-blue);">${p.score.toLocaleString()}</td>
+                    <td>
+                        <button class="action-btn btn-edit" onclick="openEditPlayer(${p.id})">EDIT</button>
+                        <button class="action-btn btn-delete" onclick="deletePlayer(${p.id})">DELETE</button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        function renderRegs(regs) {
+            document.getElementById('regsBody').innerHTML = regs.map(r => `
+                <tr>
+                    <td style="font-weight:700;">${r.gamer_tag}</td>
+                    <td>${r.email}</td>
+                    <td>${r.tournament_name || '—'}</td>
+                    <td style="font-family:'Orbitron'; font-size:12px; color:var(--soft-mint);">${r.payment_ref}</td>
+                    <td><span style="color:var(--soft-mint);">${r.payment_status.toUpperCase()}</span></td>
+                    <td>${new Date(r.registered_at).toLocaleDateString()}</td>
+                </tr>`).join('');
+        }
+
+        function renderMsgs(msgs) {
+            document.getElementById('msgsBody').innerHTML = msgs.map(m => `
+                <tr>
+                    <td style="font-weight:700;">${m.gamer_tag}</td>
+                    <td>${m.email}</td>
+                    <td style="color:var(--neon-purple);">${m.inquiry_type}</td>
+                    <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${m.message}</td>
+                    <td>${new Date(m.created_at).toLocaleDateString()}</td>
+                </tr>`).join('');
+        }
+
+        function showTab(tab) {
+            ['users','players','registrations','messages'].forEach(t => {
+                document.getElementById('tab-'+t).style.display = t===tab ? 'block' : 'none';
+            });
+            document.querySelectorAll('.tab-btn').forEach((b,i) => {
+                b.classList.toggle('active', ['users','players','registrations','messages'][i] === tab);
+            });
+        }
+
+        function openEditUser(id, fn, ln, email, role) {
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editFirstName').value = fn;
+            document.getElementById('editLastName').value = ln;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editRole').value = role;
+            document.getElementById('editUserModal').classList.add('open');
+        }
+
+        async function saveUser() {
+            const id = document.getElementById('editUserId').value;
+            await fetch(`/api/admin/users/${id}`, {
+                method:'PUT', credentials:'include',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({
+                    first_name: document.getElementById('editFirstName').value,
+                    last_name: document.getElementById('editLastName').value,
+                    email: document.getElementById('editEmail').value,
+                    role: document.getElementById('editRole').value,
+                })
+            });
+            closeModal('editUserModal');
+            loadAll();
+        }
+
+        async function deleteUser(id) {
+            if (!confirm('Delete this user?')) return;
+            await fetch(`/api/admin/users/${id}`, { method:'DELETE', credentials:'include' });
+            loadAll();
+        }
+
+        function openAddPlayer() {
+            document.getElementById('playerModalTitle').textContent = 'ADD PLAYER';
+            document.getElementById('editPlayerId').value = '';
+            ['pName','pRole','pBio','pAchievements'].forEach(id => document.getElementById(id).value = '');
+            ['pWins','pKd','pHours','pScore'].forEach(id => document.getElementById(id).value = 0);
+            document.getElementById('playerModal').classList.add('open');
+        }
+
+        function openEditPlayer(id) {
+            const p = allPlayers.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('playerModalTitle').textContent = 'EDIT PLAYER';
+            document.getElementById('editPlayerId').value = p.id;
+            document.getElementById('pName').value = p.name;
+            document.getElementById('pGame').value = p.game;
+            document.getElementById('pRole').value = p.role;
+            document.getElementById('pRank').value = p.rank;
+            document.getElementById('pWins').value = p.wins;
+            document.getElementById('pKd').value = p.kd;
+            document.getElementById('pHours').value = p.hours;
+            document.getElementById('pScore').value = p.score;
+            document.getElementById('pBio').value = p.bio || '';
+            document.getElementById('pAchievements').value = p.achievements || '';
+            document.getElementById('playerModal').classList.add('open');
+        }
+
+        async function savePlayer() {
+            const id = document.getElementById('editPlayerId').value;
+            const data = {
+                name: document.getElementById('pName').value,
+                game: document.getElementById('pGame').value,
+                role: document.getElementById('pRole').value,
+                rank: document.getElementById('pRank').value,
+                wins: +document.getElementById('pWins').value,
+                kd: +document.getElementById('pKd').value,
+                hours: +document.getElementById('pHours').value,
+                score: +document.getElementById('pScore').value,
+                bio: document.getElementById('pBio').value,
+                achievements: document.getElementById('pAchievements').value,
+            };
+            const url = id ? `/api/admin/players/${id}` : '/api/admin/players';
+            const method = id ? 'PUT' : 'POST';
+            await fetch(url, { method, credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+            closeModal('playerModal');
+            loadAll();
+        }
+
+        async function deletePlayer(id) {
+            if (!confirm('Delete this player?')) return;
+            await fetch(`/api/admin/players/${id}`, { method:'DELETE', credentials:'include' });
+            loadAll();
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+        checkAdmin();
+    </script>
+</body>
+</html>

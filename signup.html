@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <title>Sign Up | LUNA ARENA</title>
+    <style>
+        .strength-container { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin: 10px 0; overflow: hidden; }
+        #strength-bar { height: 100%; width: 0%; transition: 0.3s ease; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">LUNA<span>ARENA</span></div>
+                <nav>
+            <a href="index.html">Home</a>
+            <a href="player.html">Legends</a>
+            <a href="tournaments.html">Tournaments</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="contact.html">Join</a>
+            <a href="signup.html">Sign Up</a>
+            <a href="login.html">Login</a>
+            <a href="profile.html">Profile</a>
+            <button class="theme-toggle" id="themeToggle" onclick="ThemeManager.toggle()" title="Toggle Dark/Light Mode">☀️</button>
+        </nav>
+    </header>
+
+    <section id="contact">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="font-family: 'Orbitron'; font-size: 2.5rem; color: var(--neon-blue);">JOIN THE SQUAD</h2>
+            <p style="color: var(--text-dim); letter-spacing: 2px; margin-top: 8px;">CREATE YOUR INTERSTELLAR PROFILE</p>
+        </div>
+
+        <form id="signupForm" class="contact-form" novalidate>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <input type="text" id="firstName" placeholder="FIRST NAME">
+                    <span id="fnameError" class="error-msg"></span>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="lastName" placeholder="LAST NAME">
+                    <span id="lnameError" class="error-msg"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="number" id="age" placeholder="AGE">
+                <span id="ageError" class="error-msg"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="email" id="email" placeholder="EMAIL ADDRESS">
+                <span id="emailStatus"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="password" id="password" placeholder="PASSWORD">
+                <div class="strength-container"><div id="strength-bar"></div></div>
+                <span id="passError" class="error-msg"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="password" id="confirmPassword" placeholder="CONFIRM PASSWORD">
+                <span id="confirmError" class="error-msg"></span>
+            </div>
+
+            <button type="submit" class="btn">REGISTER OPERATIVE</button>
+            <div id="successMsg" style="text-align: center; margin-top: 15px;"></div>
+        </form>
+    </section>
+
+    <!-- CLAUDE-POWERED CHATBOT -->
+    <div id="luna-bot-widget">
+        <button class="bot-toggle" onclick="LunaBot.toggle()" title="Open LUNA_ASSIST">🤖</button>
+        <div class="bot-window" id="botWin">
+            <div class="bot-header">
+                <span>LUNA_ASSIST v2.0</span>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="bot-status"><div class="bot-status-dot"></div><span>ONLINE</span></div>
+                    <button onclick="LunaBot.toggle()" style="background:none; border:none; color:white; cursor:pointer; font-size:14px; opacity:0.7;">✖</button>
+                </div>
+            </div>
+            <div class="bot-messages" id="botMsgs">
+                <div class="msg bot">Welcome to registration! Passwords need 8+ characters with uppercase, lowercase, a number, and a special character. Ask me anything! ✨</div>
+            </div>
+            <div class="bot-input">
+                <input type="text" id="botInp" placeholder="Ask anything..." onkeypress="if(event.key==='Enter') LunaBot.send()">
+                <button onclick="LunaBot.send()">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="luna-core.js"></script>
+    <script>
+        const form = document.getElementById('signupForm');
+        const passwordInput = document.getElementById('password');
+        const strengthBar = document.getElementById('strength-bar');
+
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
+            let strength = 0;
+            if (val.length >= 8) strength++;
+            if (/[A-Z]/.test(val)) strength++;
+            if (/[a-z]/.test(val)) strength++;
+            if (/[0-9]/.test(val)) strength++;
+            if (/[@#$%^&*!]/.test(val)) strength++;
+
+            const colors = ['#ff4d4d', '#ffa500', '#ffff00', '#00ff88', '#00f2ff'];
+            strengthBar.style.width = (strength * 20) + '%';
+            strengthBar.style.backgroundColor = colors[strength - 1] || '#222';
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            let isValid = true;
+
+            ['firstName', 'lastName', 'age'].forEach(id => {
+                const el = document.getElementById(id);
+
+                const errId = id === 'firstName' ? 'fnameError' :
+                            id === 'lastName' ? 'lnameError' :
+                            'ageError';
+
+                if (!el.value.trim()) {
+                    document.getElementById(errId).innerText = "Field cannot be empty";
+                    isValid = false;
+                } else {
+                    document.getElementById(errId).innerText = "";
+                }
+            });
+
+            const email = document.getElementById('email');
+            const emailStatus = document.getElementById('emailStatus');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailRegex.test(email.value)) {
+                emailStatus.innerHTML = '<span class="valid-msg">✔ Valid Email</span>';
+            } else {
+                emailStatus.innerHTML = '<span class="error-msg">✘ Invalid Email Format</span>';
+                isValid = false;
+            }
+
+            const pass = passwordInput.value;
+            const passErr = document.getElementById('passError');
+            const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{8,}$/;
+            if (!passRegex.test(pass)) {
+                passErr.innerText = "Must be 8+ chars with Upper, Lower, Num, and Special Char.";
+                isValid = false;
+            } else { passErr.innerText = ""; }
+
+            const confirm = document.getElementById('confirmPassword').value;
+            const confirmErr = document.getElementById('confirmError');
+            if (confirm !== pass) {
+                confirmErr.innerText = "Passwords do not match!";
+                isValid = false;
+            } else { confirmErr.innerText = ""; }
+
+            if (isValid) {
+                try {
+                    const res = await fetch('/api/signup', {
+                        method: 'POST', credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            firstName: document.getElementById('firstName').value,
+                            lastName:  document.getElementById('lastName').value,
+                            age:       document.getElementById('age').value,
+                            email:     document.getElementById('email').value,
+                            password:  pass
+                        })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        document.getElementById('successMsg').innerHTML = '<h3 class="valid-msg">✅ ACCESS GRANTED: OPERATIVE REGISTERED!</h3><p style="color:var(--text-dim);font-size:13px;margin-top:8px;">Redirecting to login...</p>';
+                        form.reset(); strengthBar.style.width = '0%';
+                        setTimeout(() => window.location.href = 'login.html', 2000);
+                    } else {
+                        document.getElementById('successMsg').innerHTML = `<p class="error-msg">✘ ${data.error}</p>`;
+                    }
+                } catch {
+                    document.getElementById('successMsg').innerHTML = '<p class="error-msg">✘ Server error. Make sure app.py is running.</p>';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
